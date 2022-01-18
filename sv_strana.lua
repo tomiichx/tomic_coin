@@ -145,7 +145,7 @@ function tCoinLogovi(name, message, color)
             ["title"] = "**".. name .."**",
             ["description"] = message,
             ["footer"] = {
-                ["text"] = "@Tomić | Logovi\nVrijeme: " .. vrijeme.hour .. ":" .. vrijeme.min .. ":" .. vrijeme.sec,
+            ["text"] = "@Tomić | Logovi\nVrijeme: " .. vrijeme.hour .. ":" .. vrijeme.min .. ":" .. vrijeme.sec,
             },
         }
     }
