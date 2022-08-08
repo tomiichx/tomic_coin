@@ -5,10 +5,7 @@
 --     ESX = obj 
 -- end)
 
-local TrenutniCoinL = {} -- Tabela u koju se store-a trenutno ime lokacije coin-a.
-local TrenutniCoinX = {} -- Tabela u koju se store-a trenutna X kordinata.
-local TrenutniCoinY = {} -- Tabela u koju se store-a trenutna Y kordinata.
-local TrenutniCoinZ = {} -- Tabela u koju se store-a trenutna Z kordinata.
+local info = {} -- Data
 local hLokacije = {
     -- Glavna Garaža
     [1] = {x = 228.28, y = -754.6, z = 34.64, lokacija = "Glavna Garaža"},
@@ -49,34 +46,17 @@ end
 
 RegisterServerEvent("tCoin:pokreni")
 AddEventHandler("tCoin:pokreni", function()
-    TrenutniCoinL = {} 
-    TrenutniCoinX = {}
-    TrenutniCoinY = {}
-    TrenutniCoinZ = {}
+    info = {}
     local tCoinX = tCoinRandomLokacija(hLokacije)
-    table.insert(TrenutniCoinL, tCoinX.lokacija)
-    table.insert(TrenutniCoinX, tCoinX.x)
-    table.insert(TrenutniCoinY, tCoinX.y)
-    table.insert(TrenutniCoinZ, tCoinX.z)
-    -- print(TrenutniCoinL[1])
-    -- print(TrenutniCoinX[1])
-    -- print(TrenutniCoinY[1])
-    -- print(TrenutniCoinZ[1])
-    ESX.RegisterServerCallback('tCoin:randomx', function(source, cb)
+    table.insert(info, {
+        x = tCoinX.x,
+        y = tCoinX.y,
+        z = tCoinX.z,
+        lokacija = tCoinX.lokacija
+    })
+    ESX.RegisterServerCallback('tCoin:info', function(source, cb)
         local xPlayer  = ESX.GetPlayerFromId(source)
-        cb(TrenutniCoinX[1])
-    end)
-    ESX.RegisterServerCallback('tCoin:randomy', function(source, cb)
-        local xPlayer  = ESX.GetPlayerFromId(source)
-        cb(TrenutniCoinY[1])
-    end)
-    ESX.RegisterServerCallback('tCoin:randomz', function(source, cb)
-        local xPlayer  = ESX.GetPlayerFromId(source)
-        cb(TrenutniCoinZ[1])
-    end)
-    ESX.RegisterServerCallback('tCoin:randoml', function(source, cb)
-        local xPlayer  = ESX.GetPlayerFromId(source)
-        cb(TrenutniCoinL[1])
+        cb(Info)
     end)
 end)
 
@@ -84,7 +64,7 @@ RegisterServerEvent('tCoin:pokupio')
 AddEventHandler('tCoin:pokupio', function(vr)
     local xPlayer = ESX.GetPlayerFromId(source)
     local ime = GetPlayerName(xPlayer.source)
-    TriggerClientEvent('chat:addMessage', -1, {color = Config.PrefixColor, multiline = false, args = {Config.PrefixPoruke, "tCoin je bio na lokaciji: "..TrenutniCoinL[1].." i pronašao ga je "..ime.."!"}})
+    TriggerClientEvent('chat:addMessage', -1, {color = Config.PrefixColor, multiline = false, args = {Config.PrefixPoruke, "tCoin je bio na lokaciji: "..info.lokacija.." i pronašao ga je "..ime.."!"}})
     TriggerClientEvent('tCoin:pokupio', -1, vr)
 end)
 
@@ -92,7 +72,7 @@ RegisterServerEvent("tCoin:postavi")
 AddEventHandler("tCoin:postavi", function()
     local xPlayer = ESX.GetPlayerFromId(source)
     MySQL.Sync.execute("UPDATE users SET tCoin = tCoin + @tCoin WHERE identifier = @identifier", { ["@identifier"] = xPlayer.identifier, ["@tCoin"] = 1 })
-    tCoinLogovi("tCoin Pronađen!", "**" ..GetPlayerName(xPlayer.source) .."** je pronašao tCoin. Lokacija: **"..TrenutniCoinL[1].."**.")
+    tCoinLogovi("tCoin Pronađen!", "**" ..GetPlayerName(xPlayer.source) .."** je pronašao tCoin. Lokacija: **"..info.lokacija.."**.")
 end)
 
 RegisterServerEvent('tCoin:zapocniClient')
